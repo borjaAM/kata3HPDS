@@ -9,22 +9,36 @@ import static refactoring.Rover.Order.*;
 
 public class Rover {
 
+	private static Mapa mapa;
 	private  Heading heading;
 	private Position position;
+
+	private ViewPoint viewPoint;
 
 	public Rover(String facing, int x, int y) {
 		this(Heading.of(facing), x, y);
 	}
 
 	public Rover(Heading heading, int x, int y) {
-		this.heading = heading;
-		position = new Position(x,y);
+		this(heading, new Position(x,y));
 	}
 
 	public Rover(Heading heading, Position position) {
 		this.heading = heading;
 		this.position = position;
 	}
+
+	/*public Rover(ViewPoint viewPoint){
+		this.viewPoint = viewPoint;
+	}*/
+
+	// getViewPoint
+
+	public void setMapa(Mapa mapa){
+		this.mapa = mapa;
+	}
+
+	public static Mapa getMapa(){ return mapa; }
 
 	public Heading heading(){
 		return heading;
@@ -82,7 +96,15 @@ public class Rover {
 		actions.put(Forward, this::forward);
 		actions.put(Backward, this::backward);
 	}
-
+/* con ViewPoint
+	private static Map<Order, Action> actions = new HashMap<>();
+	{
+		actions.put(Left, () -> viewPoint = viewPoint.turnLeft()); // es lo mismo que () -> heading = heading.turnLeft();
+		actions.put(Right, () -> viewPoint = viewPoint.turnRight());
+		actions.put(Forward, () -> viewPoint = viewPoint.forward());
+		actions.put(Backward, () -> viewPoint = viewPoint.backward());
+	}
+	*/
 	@FunctionalInterface
 	public interface Action{
 		void execute();
@@ -97,9 +119,29 @@ public class Rover {
 			this.y = y;
 		}
 
+		public int getX() {
+			return x;
+		}
+
+		public int getY() {
+			return y;
+		}
+
+		private boolean sensor(Position pos){
+			if (getMapa().getForwardPosition(pos) == -1){
+				return false;
+			}
+			return true;
+		}
+
 		// Refactoring with Query
 		public Position forward(Heading heading){
-			return new Position(x += dx(heading), y += dy(heading));
+			Position pos = new Position(x + dx(heading), y + dy(heading));
+			if(sensor(pos) == true){
+				return pos;
+			}
+			System.out.println("Hay un obstáculo en la posición: " + pos + ", por tanto me quedo en la posición: " + new Position(x,y));
+			return new Position(x,y);
 		}
 
 		public Position backward(Heading heading) {
