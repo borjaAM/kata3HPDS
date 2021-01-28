@@ -1,9 +1,9 @@
 package com.codemanship.marsrover;
 
 import org.junit.Test;
-import refactoring.Rover.Heading;
+import refactoring.SimpleViewPoint.Heading;
 import static org.assertj.core.api.Assertions.assertThat;
-import static refactoring.Rover.Heading.*;
+import static refactoring.SimpleViewPoint.Heading.*;
 
 public class Heading_ {
 
